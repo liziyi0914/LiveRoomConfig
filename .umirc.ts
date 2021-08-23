@@ -10,6 +10,25 @@ export default defineConfig({
   dynamicImport: {
     loading: '@/pages/Loading'
   },
+  headScripts: [
+    {
+      src: 'https://www.googletagmanager.com/gtag/js?id=G-E8RSSX1QSF',
+      async: true
+    },
+    {
+      content: `window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-E8RSSX1QSF');
+                var _hmt = _hmt || [];
+                (function() {
+                  var hm = document.createElement("script");
+                  hm.src = "https://hm.baidu.com/hm.js?7ed3143039965de39acea95c6d74fc15";
+                  var s = document.getElementsByTagName("script")[0];
+                  s.parentNode.insertBefore(hm, s);
+                })();`
+    }
+  ],
   history: {
     type: 'hash'
   },
