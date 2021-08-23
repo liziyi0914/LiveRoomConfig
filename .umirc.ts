@@ -12,6 +12,9 @@ export default defineConfig({
   },
   headScripts: [
     {
+      src: 'https://s9.cnzz.com/z_stat.php?id=1280241182&web_id=1280241182'
+    },
+    {
       src: 'https://www.googletagmanager.com/gtag/js?id=G-E8RSSX1QSF',
       async: true
     },
