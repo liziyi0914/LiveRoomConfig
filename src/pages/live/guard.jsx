@@ -5,7 +5,7 @@ import {
   Row,
   Col,
   Select,
-  Result,
+  Result
 } from 'antd';
 import React from 'react';
 import { history } from 'umi';
@@ -13,8 +13,7 @@ import Rule from '../../components/Rule';
 import Layout from '../../components/Layout';
 import RuleModelForm from '../../components/RuleModelForm';
 import ConfigManager from '../../ConfigManager';
-import GiftModelForm from '../../components/GiftModelForm';
-import {v4 as uuid} from 'uuid';
+import TextModelForm from '../../components/TextModelForm';
 
 
 export default class extends React.Component {
@@ -36,13 +35,13 @@ export default class extends React.Component {
       liveNames: liveNames,
       currentLive: liveNames?.[0] ?? '',
       define: ConfigManager.getLiveDefine(liveNames?.[0] ?? ''),
-      gift: ConfigManager.getLiveGift(liveNames?.[0] ?? ''),
+      guard: ConfigManager.getLiveGuard(liveNames?.[0] ?? ''),
     };
   }
 
-  updateGift(gift) {
-    this.setState({ gift: gift });
-    ConfigManager.setLiveGift(this.state.currentLive, gift);
+  updateGuard(guard) {
+    this.setState({ guard: guard });
+    ConfigManager.setLiveGuard(this.state.currentLive, guard);
   }
 
   render() {
@@ -60,7 +59,7 @@ export default class extends React.Component {
     }
 
     let ruleComps = [];
-    let { gift } = this.state;
+    let { guard } = this.state;
 
     let defineMap = {};
 
@@ -72,68 +71,50 @@ export default class extends React.Component {
       defineMap[key] = key;
     }
 
-    for (const g in gift) {
+    for (const g in guard) {
       ruleComps.push((
         <div>
           <Card
-            title={g}
+            title={guard[g].name}
             extra={(
               <Space>
                 {RuleModelForm(
                   <Button type='link'>添加</Button>,
                   values => {
-                    let _g = gift;
+                    let _g = guard;
                     _g[g]['rules'] = [...(_g[g]?.['rules']??[]), values];
-                    this.updateGift(_g);
+                    this.updateGuard(_g);
                   },
                   {},
                   defineMap,
                 )}
-                {GiftModelForm(
+                {TextModelForm(
                   <Button type='link'>编辑</Button>,
-                  values => {
-                    let _g = gift;
-                    _g[values.name] = {
-                      matches: values.matches.map(i => i.match),
-                      limit: values.limit,
-                      msg: values.msg,
-                    };
-                    this.updateGift(_g);
+                  '消息',
+                  '消息内容',
+                  content=>{
+                    let _g = guard;
+                    _g[g]['msg'] = content;
+                    this.updateGuard(_g);
                   },
-                  {
-                    name: g,
-                    matches: gift?.[g]?.matches.map(i => ({
-                      match: i
-                    })),
-                    limit: gift?.[g]?.limit,
-                    msg: gift?.[g]?.msg,
-                  },
+                  guard[g]?.msg??'感谢${sender}的${guard}，${result}x${count} 已送达至 ${receiver}'
                 )}
-                <Button
-                  type='link'
-                  danger
-                  onClick={() => {
-                    let _g = gift;
-                    delete _g[g];
-                    this.updateGift(_g);
-                  }}
-                >删除</Button>
               </Space>
             )}
           >
             <Row>
-              {gift?.[g]?.['rules']?.map(r => (
+              {guard?.[g]?.['rules']?.map(r => (
                 <Col span={4}>
                   <Rule {...r} definedRules={defineMap}
                         onUpdate={value => {
-                          let _g = gift;
+                          let _g = guard;
                           _g[g].rules = _g[g]?.rules?.map(i => i === r ? value : i);
-                          this.updateGift(_g);
+                          this.updateGuard(_g);
                         }}
                         onDelete={() => {
-                          let _g = gift;
+                          let _g = guard;
                           _g[g].rules = _g[g]?.rules?.filter(i => i !== r);
-                          this.updateGift(_g);
+                          this.updateGuard(_g);
                         }}
                   />
                 </Col>
@@ -148,14 +129,14 @@ export default class extends React.Component {
     return (
       <Layout>
         <Space>
-          <h1>礼物</h1>
+          <h1>大航海</h1>
           <Select
             style={{ minWidth: '10rem' }}
             defaultValue={this.state.currentLive}
             onChange={value => this.setState({
               currentLive: value,
               define: ConfigManager.getLiveDefine(value),
-              gift: ConfigManager.getLiveGift(value),
+              guard: ConfigManager.getLiveGuard(value),
             })}
           >
             {this.state.liveNames.map(name => (
@@ -163,35 +144,6 @@ export default class extends React.Component {
             ))}
           </Select>
         </Space>
-        <br />
-        <Space>
-          {GiftModelForm(
-            <Button type='primary'>添加</Button>,
-            values => {
-              let _g = gift;
-              _g[values.name] = {
-                matches: values.matches.map(i => i.match),
-                limit: values.limit,
-                msg: values.msg,
-                rules: []
-              };
-              this.updateGift(_g);
-            },
-            {
-              name: uuid(),
-              limit: 20,
-              msg: '感谢 ${sender} 赠送的 ${gift}x${gift_count}，${result}x${count} 已送达至 ${receiver}'
-            },
-          )}
-          <Button
-            type='link'
-            danger
-            onClick={() => {
-              this.updateGift({});
-            }}
-          >清空</Button>
-        </Space>
-        <br />
         <br />
         {ruleComps}
       </Layout>

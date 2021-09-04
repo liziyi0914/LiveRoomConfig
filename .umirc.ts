@@ -80,6 +80,11 @@ export default defineConfig({
           component: '@/pages/live/danmaku',
           name: '弹幕'
         },
+        {
+          path: '/live/guard',
+          component: '@/pages/live/guard',
+          name: '大航海'
+        },
       ]
     },
     {

@@ -497,7 +497,7 @@ class ConfigManager {
   }
 
   static setLive(live) {
-    return ConfigManager.config['live'] = live;
+    ConfigManager.config['live'] = live;
     ConfigManager.save();
   }
 
@@ -518,6 +518,33 @@ class ConfigManager {
 
   static setLiveGift(live, gift) {
     ConfigManager.config.live[live].gift = gift;
+    ConfigManager.save();
+  }
+
+  static getLiveGuard(live) {
+    ConfigManager.init();
+    return ConfigManager.config?.live?.[live]?.guard ?? ([
+      {
+        name: '舰长',
+        msg: '感谢${sender}的${guard}，${result}x${count} 已送达至 ${receiver}',
+        rules: []
+      },
+      {
+        name: '提督',
+        msg: '感谢${sender}的${guard}，${result}x${count} 已送达至 ${receiver}',
+        rules: []
+      },
+      {
+        name: '总督',
+        msg: '感谢${sender}的${guard}，${result}x${count} 已送达至 ${receiver}',
+        rules: []
+      },
+    ]);
+  }
+
+  static setLiveGuard(live, guard) {
+    console.log(guard)
+    ConfigManager.config.live[live].guard = guard;
     ConfigManager.save();
   }
 
